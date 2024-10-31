@@ -1,0 +1,169 @@
+---
+title: "2da Tarea"
+author: "Anibal"
+format: html
+editor: visual
+toc: true
+lang: es
+theme: cosmo
+---
+
+# Biliotecas utilizadas
+
+```{r}
+#| label: Carga de biblitecas
+#| warning: false
+#| message: false
+
+library (tidyverse)
+library (ggplot2)
+library (dplyr)
+library (DT)
+library (scales)
+library (ggthemes)
+library (hrbrthemes)
+
+```
+****
+
+# Gráfico de barras
+## Codigo
+
+```{r}
+ggplot(iris, aes(x = Species, y = Petal.Width, fill = Species)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge") +
+  labs(
+    title = "Frecuencia en ancho de pétalos por especie",
+    x = "Especies",
+    y = "Ancho de pétalos (cm)",
+    caption = "Fuentes: Fisher, R. A. (1936)"
+  ) +
+  theme_minimal()
+
+```
+
+### Ancho de Pétalos por Especie
+
+Este gráfico de barras la distribución de las especies según el ancho de sus petalos. Se puede notar con la especie *virginica* tiene el ancho de petalo mayor con **2cm**, seguida por *versicolor* con un ancho con cerca de **1,3cm** y por último la especie *setosa* con **0.2cm** de ancho en sus petalos. Para conocer mayor detalles sobre la especie con mayor tamaño puede hacer click sobre su nombre [viginica](https://www.picturethisai.com/es/wiki/Iris_virginica.html)
+
+****
+
+# Gráfico Pastel
+
+## Codigo
+
+```{r}
+#| label: Contar la cantidad de cada especie
+#| warning: false
+#| message: false
+especies_count <- iris |>
+  group_by(Species) |>
+  summarise(count = n()) 
+```
+
+## Codigo
+```{r}
+#| label: Crear el gráfico de pastel
+#| warning: false
+#| message: false
+ggplot(especies_count, aes(x = "", y = count, fill = Species)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y") +
+   labs(caption = "Fuentes: Fisher, R. A. (1936)") +
+  labs(title = "Distribución de Especies para la Base de Datos Iris") +
+  theme_void()
+```
+### Distribución de especies
+Este pequeño gráfico pastel muestra la**distribución de especies en la base para la base de datos Iris** es muy evidente la distribución uniforme de la muestra del estudio, en donde cada especie represente una tercera parte del total.
+
+****
+
+# Gráfico de dispersión
+
+## Codigo
+
+#Agregar nuevos datos a la base de datos "women"
+
+```{r}
+# Nuevo vector con las edades 
+edades <- c(25, 30, 22, 28, 35, 27, 36, 56, 70, 28, 40, 53, 69, 75, 32)   
+
+# Agregar la nueva columna de Edades
+women <- women |>
+  mutate(Edad = edades)
+
+# Mostrar los primeros registros de la nueva base de datos
+head(women)
+  
+```
+
+
+## Codigo
+
+
+```{r}
+#| label: Crear gráfico de dispersión
+#| warning: false
+#| message: false
+ggplot(women, aes(x = Edad, y = weight)) +
+  geom_point(color = "blue", size = 3) +
+     labs(caption = "Fuentes: The World Almanac and Book of Facts (1975)") +
+  labs(title = "Gráfico de Dispersión: Edad vs Peso",
+       x = "Edad (años)",
+       y = "Peso (libras)") +
+  theme_minimal()
+```
+### Edad y peso
+
+Para este gráfico de dispersión tenemos las variables de **edad y peso**, del mismo podemos notar como no existe una relación entre ambas variables, claramente este ejercicio se realizó con una pequeña muestra y con un fin meramente académico, pero en la realidad podríamos esperar algo seméjate ya que el rango de edades ya adultas no necesariamente va referir un patrón de peso.
+
+****
+
+# Histograma de Frecuencias
+
+## Codigo
+
+#Crear una nueva variable "IMC" a partir del peso(kg) y la estatura (m)
+```{r}
+women$height <- women$height*0.0254
+women$weight <- women$weight*0.453592
+women$IMC = women$weight/(women$height**2)
+```
+
+
+
+## Codigo
+```{r}
+# Histograma ggplot2 de distribución del IMC
+histograma_ggplot2 <- 
+  women |>
+  ggplot(aes(x = IMC)) +
+  geom_histogram(
+    aes(
+      text = paste0(
+        "IMC = ", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      )
+    ), 
+    bins = 5
+  ) +
+  ggtitle("Distribución de los valores del IMC") +
+  xlab("Valor del IMC") +
+  ylab("Frecuencia") +
+  labs(caption = "Fuentes: The World Almanac and Book of Facts, (1975)") +
+  theme_economist() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Mostrar el histograma en ggplot2
+print(histograma_ggplot2)
+```
+### IMC
+
+De este histograma podemos interpretar que del total de la muestra, los rangos tubieron el siguiente comportamiento: 
+
+- Entre 22,0 y 22,05: 8 mujeres
+- Entre 22,5 y 23,0:2 mujeres
+- Entre 23,0 y 23,5: 3 mujeres 
+- Y por ultimos entre 23,5-24,0 y 24,0 y 24,5 una mujer por intervalo respectivamente.
+En general podemos notar una tendencia a valores más bajos del IMC calculado.
+
